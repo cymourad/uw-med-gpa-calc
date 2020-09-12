@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>GPA Calculator</title>
+		<meta
+			name="description"
+			content="Ontario Med Schools GPA Calculator for UW students"
+		/>
+		<meta name="author" content="Christian Mourad" />
+		<script type="text/javascript" src="papaparse.min.js"></script>
+	</head>
+	<body>
+		<h1>GPA Calculator</h1>
+		<p>
+			This simple tool lets UW students calculate the GPA as the different Med
+			Schools in Ontario would see it.
+		</p>
+		<p>To use it, please upload your marks as an excel sheet below.</p>
+		<p><strong>Note:</strong> The columns must have the following names:</p>
+		<ul>
+			<li><strong>course</strong>: code of the course</li>
+			<li><strong>grade</strong>: out of 100</li>
+			<li><strong>weight</strong>: between 0.13 and 1 (maybe more)</li>
+			<li><strong>year</strong>: 1, 2, 3, or 4</li>
+			<li>
+				<strong>term</strong>: fall, winter, or spring (all lower case please)
+			</li>
+			<li><strong>yyyy</strong>: the year you took this course (ex: 2019)</li>
+		</ul>
+		<input type="file" id="upload-csv" accept=".csv" />
+		<br />
+		<br />
+		<p>I am currently in my _____ year.</p>
+		<input type="radio" id="first-year" name="current-year" value="1" />
+		<label for="first-year">first</label><br />
+		<input type="radio" id="second-year" name="current-year" value="2" />
+		<label for="second-year">second</label><br />
+		<input type="radio" id="third-year" name="current-year" value="3" />
+		<label for="third-year">third</label><br />
+		<input
+			type="radio"
+			id="fourth-year"
+			name="current-year"
+			value="4"
+			checked
+		/>
+		<label for="fourth-year">fourth</label><br />
+		<input type="radio" id="fifth-year" name="current-year" value="5" />
+		<label for="fifth-year">done my under-grad</label><br />
+		<br />
+		<br />
+		<button id="btn-upload-csv">Calculate my GPA</button>
+		<br />
+		<br />
+		<p id="GPA"></p>
+		<script type="text/javascript" src="gpaCalc.js"></script>
+	</body>
+</html>
