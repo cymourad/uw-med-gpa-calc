@@ -9,24 +9,45 @@
 		<meta name="author" content="Christian Mourad" />
 		<script type="text/javascript" src="papaparse.min.js"></script>
 	</head>
+
 	<body>
 		<h1>GPA Calculator</h1>
+
+		<h4>
+			This simple tool lets UW students** calculate their GPA as the different
+			Med Schools in Ontario would see it.
+		</h4>
+
 		<p>
-			This simple tool lets UW students calculate the GPA as the different Med
-			Schools in Ontario would see it.
+			To use it, please upload your grades as .csv file (can be edited with
+			Excel and saves as CSV).
 		</p>
-		<p>To use it, please upload your marks as an excel sheet below.</p>
+
 		<p><strong>Note:</strong> The columns must have the following names:</p>
 		<ul>
 			<li><strong>course</strong>: code of the course</li>
 			<li><strong>grade</strong>: out of 100</li>
 			<li><strong>weight</strong>: between 0.13 and 1 (maybe more)</li>
 			<li><strong>year</strong>: 1, 2, 3, or 4</li>
-			<li>
+			<!-- <li>
 				<strong>term</strong>: fall, winter, or spring (all lower case please)
-			</li>
-			<li><strong>yyyy</strong>: the year you took this course (ex: 2019)</li>
+			</li> -->
+			<!-- <li><strong>yyyy</strong>: the year you took this course (ex: 2019)</li> -->
 		</ul>
+
+		<a href="sample_grades.csv" download
+			>Download Template File (Edit with Excel)</a
+		><br />
+		<p>
+			* This file dowloads as .xsl if you are using Windows, Chrome, and have
+			Microsoft Office.
+		</p>
+		<p>
+			* If you meet all these conditions, you can still download the file and
+			save it as .csv.
+		</p>
+		<br />
+
 		<input type="file" id="upload-csv" accept=".csv" />
 		<br />
 		<br />
@@ -50,9 +71,14 @@
 		<br />
 		<br />
 		<button id="btn-upload-csv">Calculate my GPA</button>
-		<br />
-		<br />
+
+		<p>
+			** This would also work for any other school in Ontario that gives grades
+			out of 100.
+		</p>
+
 		<p id="GPA"></p>
+
 		<script type="text/javascript" src="gpaCalc.js"></script>
 	</body>
 </html>

@@ -43,9 +43,8 @@ let btn_upload = document
 					4: 0,
 				};
 
-				// this is an object of arrays representing the marks of each year
-				// TODO I might need to pair the marks with the weights to know which courses to remove that account for the worst 1.0 credit
-				let OMSASgradesForYear = {
+				// used to calculate wGPA (might actually be called uGPA)
+				let halfCreditGradesForYear = {
 					1: [],
 					2: [],
 					3: [],
@@ -71,6 +70,9 @@ let btn_upload = document
 
 						const omsasGrade = getOMSASgradeFromUWpercentage(grade);
 
+						// fill the array used for wGPA
+						if (weight == 0.5) halfCreditGradesForYear[year].push(grade);
+
 						// return an error message if a grade is not between 0 and 100
 						// TODO make this not execute any code after the loop and just display error
 						if (omsasGrade == -1) {
@@ -80,12 +82,8 @@ let btn_upload = document
 							).innerHTML = `<p>Your grade for ${course} must be between 0 and 100.</p>`;
 							return -1;
 						}
-
-						OMSASgradesForYear[year].push(omsasGrade);
 					}
 				});
-
-				console.log(OMSASgradesForYear);
 
 				// TODO use the OMSAS equivalent grades to get the GPA
 				// I am using logic found at https://www.premedontario.com/omsas-gpa-calculator
@@ -104,10 +102,14 @@ let btn_upload = document
 				});
 
 				const AlbertaGPA = cGPA; // I could not find any special instructions for uAlberta so I am assuming it is Cumulative GPA
-				const UOttawaGPA = getOttawaGPA(cGPAofYear, currentYear); // getOttawaGPA(OMSASgradesForYear, currentYear);
+				const UOttawaGPA = getOttawaGPA(cGPAofYear, currentYear);
 				const WesternGPA = getWesternGPA(cGPAofYear);
 				const MacMasterGPA = cGPA;
-				const UofTGPA = 0;
+				const UofTGPA = getUofTGPA(
+					sumOfWeights,
+					sumOfWeightedGrades,
+					halfCreditGradesForYear
+				);
 				const QueensGPA = 0;
 				const MonitobaGPA = cGPA;
 				const UBCGPA = 0;
@@ -123,9 +125,9 @@ let btn_upload = document
 					<li><strong>Western University</strong>: ${WesternGPA.toFixed(2)} </li>
 					<li><strong>MacMaster University</strong>: ${MacMasterGPA.toFixed(2)}</li>
 					<li><strong>UofT</strong>: ${UofTGPA.toFixed(2)}</li>
-					<li><strong>Queen's University</strong>: ${QueensGPA.toFixed(2)}</li>
 					<li><strong>University of Manitoba</strong>: ${MonitobaGPA.toFixed(2)}</li>
-					<li><strong>UBC</strong>: ${UBCGPA.toFixed(2)}</li>
+					<!-- <li><strong>Queen's University</strong>: ${QueensGPA.toFixed(2)}</li> -->
+					<!-- <li><strong>UBC</strong>: ${UBCGPA.toFixed(2)}</li> -->
 							
 				<ul>`;
 
@@ -223,8 +225,43 @@ function getWesternGPA(cGPAofYear) {
 
 /*
 Based on the functions of the calculator found at https://www.premedontario.com/omsas-gpa-calculator,
+this function calculates the GPA seen by UofT, which they call wGPA.
+wGPA removes the lowest 1.0 credit marks from each each (typically, a course is 0.5 credit; so it would
+typically remove 2 courses).
 */
-function getUofTGPA() {}
+
+function getUofTGPA(
+	sumOfWeightsForYear,
+	sumOfWeightedGradesForYear,
+	halfCreditCoursesForYear
+) {
+	let newSumOfWeights = 0;
+	let newSumOfWeightedGrades = 0;
+
+	[1, 2, 3, 4].forEach((year) => {
+		if (sumOfWeightsForYear[year] > 0) {
+			// find the two lowest marks that would make up 1.0 credit
+			// TODO this will get 99% of the cases (unless the student a 1.0 credit course, or 0.75 and 0.25 credit courses
+			// TODO and somehow this combination yields the lowest sum of a 1.0 credit)
+			const [lowestGrade, secondLowestGrade] = getSmallestAndSecondSmallest(
+				halfCreditCoursesForYear[year]
+			);
+
+			// substract those two lowest grades appropriately from the weighted sum
+			const newSumOfWeightedGradesForThisYear =
+				sumOfWeightedGradesForYear[year] -
+				0.5 * (lowestGrade + secondLowestGrade);
+
+			//
+			newSumOfWeightedGrades += newSumOfWeightedGradesForThisYear;
+			newSumOfWeights += sumOfWeightsForYear[year] - 1;
+		}
+	});
+
+	return getOMSASgradeFromUWpercentage(
+		newSumOfWeightedGrades / newSumOfWeights
+	);
+}
 
 /**
  *
@@ -240,7 +277,7 @@ function getSumOfArray(arr) {
 
 /**
  *
- * @param {Array} arr
+ * @param {Array} arr array of numbers.
  *
  * @returns {Number} the average of the numbers in this array.
  * If the array is empty, it returns 0.
@@ -256,7 +293,7 @@ function getAverageOfArray(arr) {
 
 /**
  *
- * @param {Array} arr array of numbers
+ * @param {Array} arr array of numbers.
  *
  * @returns {Array} array of two numbers: the highest and second highest number in this array.
  */
@@ -282,7 +319,7 @@ function getBiggestAndSecondBiggest(arr) {
 
 /**
  *
- * @param {Array} arr array of numbers
+ * @param {Array} arr array of numbers.
  *
  * @returns {Array} array of two numbers: the lowest and second lowest number in this array.
  */
